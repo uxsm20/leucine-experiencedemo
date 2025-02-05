@@ -13,7 +13,34 @@ The Quality Control module manages quality assurance processes throughout the pr
 - Acceptance criteria setting
 - Inspection scheduling
 
-### 2. Quality Check Execution
+### 2. Batch Review Workflow
+The batch review process follows a structured four-step workflow:
+
+#### Step 1: Batch Data Review
+- Review logged parameters (temperature, pH, pressure, yield)
+- Analyze deviation summary with severity levels (Critical, Major, Minor)
+- Verify manufacturing process compliance
+- Approve batch for release
+
+#### Step 2: Batch Finalization
+- Update batch status to "Released"
+- Generate comprehensive batch report (21 CFR Part 11 compliant)
+- Notify supply chain team for logistics planning
+- Archive batch data for regulatory compliance
+
+#### Step 3: Shipment Readiness
+- Update batch status to "Ready for Shipment"
+- Warehouse team notification for inventory pickup
+- Confirm shipment readiness
+- Track logistics and delivery status
+
+#### Step 4: Post-Production Analysis
+- Review performance metrics (completion time, quality compliance)
+- Access root cause analysis for any deviations
+- Optimize future production schedules
+- Generate analytics for continuous improvement
+
+### 3. Quality Check Execution
 - In-process inspections
 - Final product testing
 - Parameter measurement

@@ -509,14 +509,36 @@ const OrderTracker = () => {
                                   )}
                                 </div>
                                 {event.progress !== undefined && (
-                                  <div className="ml-4">
-                                    <div className="w-20 bg-gray-200 rounded-full h-2">
-                                      <div
-                                        className="bg-blue-500 h-2 rounded-full"
-                                        style={{ width: `${event.progress}%` }}
-                                      ></div>
+                                  <div className="ml-4 flex items-center gap-4">
+                                    <div className="flex-grow relative">
+                                      <div className="w-48 bg-gray-100 rounded-lg h-3 overflow-hidden">
+                                        <div
+                                          className={`h-3 rounded-lg transition-all duration-500 ${
+                                            event.progress >= 100 ? 'bg-green-500' :
+                                            event.progress >= 70 ? 'bg-blue-500' :
+                                            event.progress >= 30 ? 'bg-yellow-500' :
+                                            'bg-red-500'
+                                          }`}
+                                          style={{ width: `${event.progress}%` }}
+                                        >
+                                        </div>
+                                      </div>
+                                      <div className="absolute -bottom-5 left-0 w-full flex justify-between text-xs text-gray-500">
+                                        <span>0%</span>
+                                        <span>50%</span>
+                                        <span>100%</span>
+                                      </div>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1 text-right">{event.progress}%</p>
+                                    <div className="flex items-center gap-2">
+                                      <div className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                        event.progress >= 100 ? 'bg-green-100 text-green-800' :
+                                        event.progress >= 70 ? 'bg-blue-100 text-blue-800' :
+                                        event.progress >= 30 ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-red-100 text-red-800'
+                                      }`}>
+                                        {event.progress}%
+                                      </div>
+                                    </div>
                                   </div>
                                 )}
                               </div>

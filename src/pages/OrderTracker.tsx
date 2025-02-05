@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   TruckIcon, 
   Clock, 
@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import { OrderReport } from '../components/analytics/OrderReport';
 
 interface Order {
   id: string;
@@ -30,6 +31,10 @@ interface Order {
     status: 'completed' | 'in-progress' | 'pending' | 'delayed';
     date: string;
     detail?: string;
+    location?: string;
+    assignedTo?: string;
+    estimatedCompletion?: string;
+    progress?: number;
   }[];
 }
 
@@ -38,7 +43,9 @@ const OrderTracker = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [showRootCauseModal, setShowRootCauseModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [editedOrder, setEditedOrder] = useState<Partial<Order>>({});
 
   const orders: Order[] = [
     {
@@ -55,23 +62,36 @@ const OrderTracker = () => {
           event: 'Order Received',
           status: 'completed',
           date: '2024-03-15',
-          detail: 'Order validated and confirmed'
+          detail: 'Order validated and confirmed',
+          location: 'Order Processing Center',
+          assignedTo: 'Sarah Chen',
+          progress: 100
         },
         {
           event: 'Production Started',
           status: 'in-progress',
           date: '2024-03-20',
-          detail: 'Batch B001 in manufacturing'
+          detail: 'Batch B001 in manufacturing',
+          location: 'Manufacturing Line A',
+          assignedTo: 'Production Team Alpha',
+          estimatedCompletion: '2024-03-22',
+          progress: 60
         },
         {
           event: 'Quality Check',
           status: 'pending',
-          date: '2024-03-22'
+          date: '2024-03-22',
+          location: 'QC Lab',
+          assignedTo: 'QC Team',
+          estimatedCompletion: '2024-03-23'
         },
         {
           event: 'Shipping',
           status: 'pending',
-          date: '2024-03-24'
+          date: '2024-03-24',
+          location: 'Distribution Center',
+          assignedTo: 'Logistics Team',
+          estimatedCompletion: '2024-03-25'
         }
       ]
     },
@@ -89,23 +109,36 @@ const OrderTracker = () => {
           event: 'Order Received',
           status: 'completed',
           date: '2024-03-10',
-          detail: 'Order validated and confirmed'
+          detail: 'Order validated and confirmed',
+          location: 'Order Processing Center',
+          assignedTo: 'John Smith',
+          progress: 100
         },
         {
           event: 'Production Started',
           status: 'delayed',
           date: '2024-03-18',
-          detail: 'Delayed due to capacity constraints'
+          detail: 'Delayed due to capacity constraints',
+          location: 'Manufacturing Line B',
+          assignedTo: 'Production Team Beta',
+          estimatedCompletion: '2024-03-21',
+          progress: 30
         },
         {
           event: 'Quality Check',
           status: 'pending',
-          date: '2024-03-21'
+          date: '2024-03-21',
+          location: 'QC Lab',
+          assignedTo: 'QC Team',
+          estimatedCompletion: '2024-03-22'
         },
         {
           event: 'Shipping',
           status: 'pending',
-          date: '2024-03-22'
+          date: '2024-03-22',
+          location: 'Distribution Center',
+          assignedTo: 'Logistics Team',
+          estimatedCompletion: '2024-03-23'
         }
       ]
     },
@@ -123,25 +156,37 @@ const OrderTracker = () => {
           event: 'Order Received',
           status: 'completed',
           date: '2024-03-05',
-          detail: 'Order validated and confirmed'
+          detail: 'Order validated and confirmed',
+          location: 'Order Processing Center',
+          assignedTo: 'Emily Wong',
+          progress: 100
         },
         {
           event: 'Production Started',
           status: 'completed',
           date: '2024-03-10',
-          detail: 'Batch B003 completed'
+          detail: 'Batch B003 completed',
+          location: 'Manufacturing Line C',
+          assignedTo: 'Production Team Gamma',
+          progress: 100
         },
         {
           event: 'Quality Check',
           status: 'completed',
           date: '2024-03-15',
-          detail: 'All specifications met'
+          detail: 'All specifications met',
+          location: 'QC Lab',
+          assignedTo: 'QC Team',
+          progress: 100
         },
         {
           event: 'Shipping',
           status: 'completed',
           date: '2024-03-18',
-          detail: 'Delivered to customer'
+          detail: 'Delivered to customer',
+          location: 'Distribution Center',
+          assignedTo: 'Logistics Team',
+          progress: 100
         }
       ]
     }
@@ -323,6 +368,46 @@ const OrderTracker = () => {
         </div>
       </div>
 
+      {/* Export Reports */}
+      <OrderReport 
+        orders={orders}
+        onExport={useCallback((format: 'pdf' | 'csv' | 'excel') => {
+          // Here you would typically make an API call to generate the report
+          const fileName = `orders-report-${new Date().toISOString().split('T')[0]}`;
+          
+          switch (format) {
+            case 'pdf':
+              console.log(`Generating PDF report: ${fileName}.pdf`);
+              // Implement PDF generation logic
+              break;
+            case 'excel':
+              console.log(`Generating Excel report: ${fileName}.xlsx`);
+              // Implement Excel generation logic
+              break;
+            case 'csv':
+              console.log(`Generating CSV report: ${fileName}.csv`);
+              const csvContent = orders.map(order => {
+                return [
+                  order.id,
+                  order.customer,
+                  order.product,
+                  order.quantity,
+                  order.dueDate,
+                  order.status,
+                  order.otifScore
+                ].join(',');
+              }).join('\n');
+              
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = `${fileName}.csv`;
+              link.click();
+              break;
+          }
+        }, [orders])}
+      />
+
       {/* Orders List */}
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -415,11 +500,46 @@ const OrderTracker = () => {
                               )}
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{event.event}</p>
-                              <p className="text-sm text-gray-500">{event.date}</p>
-                              {event.detail && (
-                                <p className="text-sm text-gray-600 mt-1">{event.detail}</p>
-                              )}
+                              <div className="flex items-center justify-between w-full">
+                                <div>
+                                  <p className="font-medium text-gray-900">{event.event}</p>
+                                  <p className="text-sm text-gray-500">{event.date}</p>
+                                  {event.detail && (
+                                    <p className="text-sm text-gray-600 mt-1">{event.detail}</p>
+                                  )}
+                                </div>
+                                {event.progress !== undefined && (
+                                  <div className="ml-4">
+                                    <div className="w-20 bg-gray-200 rounded-full h-2">
+                                      <div
+                                        className="bg-blue-500 h-2 rounded-full"
+                                        style={{ width: `${event.progress}%` }}
+                                      ></div>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1 text-right">{event.progress}%</p>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="mt-2 grid grid-cols-2 gap-4">
+                                {event.location && (
+                                  <div>
+                                    <p className="text-xs text-gray-500">Location</p>
+                                    <p className="text-sm">{event.location}</p>
+                                  </div>
+                                )}
+                                {event.assignedTo && (
+                                  <div>
+                                    <p className="text-xs text-gray-500">Assigned To</p>
+                                    <p className="text-sm">{event.assignedTo}</p>
+                                  </div>
+                                )}
+                                {event.estimatedCompletion && (
+                                  <div>
+                                    <p className="text-xs text-gray-500">Est. Completion</p>
+                                    <p className="text-sm">{event.estimatedCompletion}</p>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -427,16 +547,29 @@ const OrderTracker = () => {
                     </div>
 
                     {/* Actions */}
-                    {(order.status === 'At-Risk' || order.status === 'Delayed') && (
-                      <div className="flex justify-end">
+                    <div className="flex justify-end gap-3">
+                      {(order.status === 'At-Risk' || order.status === 'Delayed') && (
                         <button
                           onClick={() => openRootCauseAnalysis(order)}
                           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                         >
                           View Root Cause Analysis
                         </button>
-                      </div>
-                    )}
+                      )}
+                      {order.status !== 'Completed' && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedOrder(order);
+                            setEditedOrder(order);
+                            setShowEditModal(true);
+                          }}
+                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+                        >
+                          Modify Order
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -531,6 +664,103 @@ const OrderTracker = () => {
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700"
                 >
                   Implement Actions
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Order Modal */}
+      {showEditModal && selectedOrder && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-lg bg-white">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Modify Order</h3>
+              <p className="text-sm text-gray-500">
+                Order #{selectedOrder.id} - {selectedOrder.product}
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {/* Quantity */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  value={editedOrder.quantity || ''}
+                  onChange={(e) => setEditedOrder(prev => ({ ...prev, quantity: parseInt(e.target.value) || 0 }))}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
+
+              {/* Due Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  value={editedOrder.dueDate || ''}
+                  onChange={(e) => setEditedOrder(prev => ({ ...prev, dueDate: e.target.value }))}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
+
+              {/* Priority Level */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Priority Level
+                </label>
+                <select
+                  value={editedOrder.status || ''}
+                  onChange={(e) => setEditedOrder(prev => ({ 
+                    ...prev, 
+                    status: e.target.value as Order['status']
+                  }))}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                >
+                  <option value="In-Progress">In Progress</option>
+                  <option value="At-Risk">At Risk</option>
+                  <option value="Delayed">Delayed</option>
+                </select>
+              </div>
+
+              {/* Impact Analysis */}
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div className="flex">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700">
+                      Modifying this order may impact:
+                    </p>
+                    <ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
+                      <li>Production schedule</li>
+                      <li>Resource allocation</li>
+                      <li>Delivery timeline</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // Here you would typically make an API call to update the order
+                    console.log('Updated order:', editedOrder);
+                    setShowEditModal(false);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700"
+                >
+                  Save Changes
                 </button>
               </div>
             </div>

@@ -1,5 +1,32 @@
 # Recent UI/UX Enhancements
 
+## Navigation Improvements
+
+### Role-Based Navigation Structure
+The sidebar navigation has been reorganized into role-based categories for better user experience and clarity:
+
+1. Supply Chain Manager
+   - Supply Chain Dashboard
+   - Order Tracker
+   - Order Analytics (formerly OTIF Analytics)
+
+2. Production Manager
+   - Production Planning
+   - Master Schedule
+   - Shop Floor Operations
+   - Quality Control
+   - Batch Data Summary
+
+3. Operator
+   - Operator Dashboard
+
+Key Features:
+- Clear role-based categorization
+- Subtle category headers in uppercase
+- Improved visual hierarchy
+- Consistent icon usage
+- Active state highlighting
+
 ## Progress Bar Improvements
 
 The progress tracking UI has been enhanced with a more sophisticated and informative design to improve user experience and clarity:

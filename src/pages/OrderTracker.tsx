@@ -38,7 +38,7 @@ interface Order {
   }[];
 }
 
-const OrderTracker = () => {
+const OrderTracker: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
@@ -139,54 +139,6 @@ const OrderTracker = () => {
           location: 'Distribution Center',
           assignedTo: 'Logistics Team',
           estimatedCompletion: '2024-03-23'
-        }
-      ]
-    },
-    {
-      id: 'ORD-2024-003',
-      customer: 'Global Health Solutions',
-      product: 'Metformin 850mg Tablets',
-      quantity: 75000,
-      dueDate: '2024-03-20',
-      status: 'Completed',
-      otifScore: 100,
-      productionBatch: 'B003',
-      timeline: [
-        {
-          event: 'Order Received',
-          status: 'completed',
-          date: '2024-03-05',
-          detail: 'Order validated and confirmed',
-          location: 'Order Processing Center',
-          assignedTo: 'Emily Wong',
-          progress: 100
-        },
-        {
-          event: 'Production Started',
-          status: 'completed',
-          date: '2024-03-10',
-          detail: 'Batch B003 completed',
-          location: 'Manufacturing Line C',
-          assignedTo: 'Production Team Gamma',
-          progress: 100
-        },
-        {
-          event: 'Quality Check',
-          status: 'completed',
-          date: '2024-03-15',
-          detail: 'All specifications met',
-          location: 'QC Lab',
-          assignedTo: 'QC Team',
-          progress: 100
-        },
-        {
-          event: 'Shipping',
-          status: 'completed',
-          date: '2024-03-18',
-          detail: 'Delivered to customer',
-          location: 'Distribution Center',
-          assignedTo: 'Logistics Team',
-          progress: 100
         }
       ]
     }
@@ -368,46 +320,6 @@ const OrderTracker = () => {
         </div>
       </div>
 
-      {/* Export Reports */}
-      <OrderReport 
-        orders={orders}
-        onExport={useCallback((format: 'pdf' | 'csv' | 'excel') => {
-          // Here you would typically make an API call to generate the report
-          const fileName = `orders-report-${new Date().toISOString().split('T')[0]}`;
-          
-          switch (format) {
-            case 'pdf':
-              console.log(`Generating PDF report: ${fileName}.pdf`);
-              // Implement PDF generation logic
-              break;
-            case 'excel':
-              console.log(`Generating Excel report: ${fileName}.xlsx`);
-              // Implement Excel generation logic
-              break;
-            case 'csv':
-              console.log(`Generating CSV report: ${fileName}.csv`);
-              const csvContent = orders.map(order => {
-                return [
-                  order.id,
-                  order.customer,
-                  order.product,
-                  order.quantity,
-                  order.dueDate,
-                  order.status,
-                  order.otifScore
-                ].join(',');
-              }).join('\n');
-              
-              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-              const link = document.createElement('a');
-              link.href = URL.createObjectURL(blob);
-              link.download = `${fileName}.csv`;
-              link.click();
-              break;
-          }
-        }, [orders])}
-      />
-
       {/* Orders List */}
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -520,8 +432,7 @@ const OrderTracker = () => {
                                             'bg-red-500'
                                           }`}
                                           style={{ width: `${event.progress}%` }}
-                                        >
-                                        </div>
+                                        ></div>
                                       </div>
                                       <div className="absolute -bottom-5 left-0 w-full flex justify-between text-xs text-gray-500">
                                         <span>0%</span>
@@ -750,23 +661,6 @@ const OrderTracker = () => {
                 </select>
               </div>
 
-              {/* Impact Analysis */}
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                <div className="flex">
-                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                  <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      Modifying this order may impact:
-                    </p>
-                    <ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
-                      <li>Production schedule</li>
-                      <li>Resource allocation</li>
-                      <li>Delivery timeline</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setShowEditModal(false)}
@@ -776,8 +670,7 @@ const OrderTracker = () => {
                 </button>
                 <button
                   onClick={() => {
-                    // Here you would typically make an API call to update the order
-                    console.log('Updated order:', editedOrder);
+                    // Handle saving changes
                     setShowEditModal(false);
                   }}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700"

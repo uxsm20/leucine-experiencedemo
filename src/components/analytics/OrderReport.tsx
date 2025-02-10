@@ -1,63 +1,64 @@
 import React from 'react';
-import { FileText, Download, Table, File } from 'lucide-react';
+import { FileText, Table, File } from 'lucide-react';
+
+interface Order {
+  id: string;
+  customer: string;
+  product: string;
+  quantity: number;
+  dueDate: string;
+  status: 'In-Progress' | 'At-Risk' | 'Completed' | 'Delayed';
+  otifScore: number;
+}
 
 interface OrderReportProps {
-  orders: any[];
+  orders: Order[];
   onExport: (format: 'pdf' | 'csv' | 'excel') => void;
 }
 
 export const OrderReport: React.FC<OrderReportProps> = ({ orders, onExport }) => {
-  const reportFormats = [
-    {
-      name: 'PDF Report',
-      format: 'pdf' as const,
-      icon: File,
-      description: 'Detailed report with charts and analysis'
-    },
-    {
-      name: 'Excel Export',
-      format: 'excel' as const,
-      icon: Table,
-      description: 'Complete dataset for analysis'
-    },
-    {
-      name: 'CSV Export',
-      format: 'csv' as const,
-      icon: FileText,
-      description: 'Raw data in CSV format'
-    }
-  ];
-
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-lg font-medium text-gray-900">Export Reports</h3>
-            <p className="text-sm text-gray-500">Download order data in various formats</p>
-          </div>
-          <span className="text-sm text-gray-500">{orders.length} orders available</span>
+    <div className="bg-white p-4 rounded-lg shadow">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium text-gray-900">Export Reports</h3>
+          <p className="text-sm text-gray-500">Download order data in various formats</p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => onExport('pdf')}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+          >
+            <File className="h-4 w-4 text-red-500" />
+            PDF Report
+          </button>
+          <button
+            onClick={() => onExport('excel')}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+          >
+            <Table className="h-4 w-4 text-green-500" />
+            Excel Report
+          </button>
+          <button
+            onClick={() => onExport('csv')}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+          >
+            <FileText className="h-4 w-4 text-blue-500" />
+            CSV Export
+          </button>
         </div>
       </div>
-      <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {reportFormats.map((format) => (
-          <div
-            key={format.format}
-            className="border rounded-lg p-4 hover:border-blue-500 cursor-pointer transition-colors"
-            onClick={() => onExport(format.format)}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <format.icon className="h-6 w-6 text-blue-500" />
-                <div>
-                  <h4 className="font-medium text-gray-900">{format.name}</h4>
-                  <p className="text-sm text-gray-500">{format.description}</p>
-                </div>
-              </div>
-              <Download className="h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-        ))}
+
+      <div className="mt-4">
+        <div className="text-sm text-gray-500">
+          Report will include:
+          <ul className="mt-2 list-disc list-inside space-y-1">
+            <li>Order details and status</li>
+            <li>Customer information</li>
+            <li>Production metrics</li>
+            <li>OTIF performance data</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
